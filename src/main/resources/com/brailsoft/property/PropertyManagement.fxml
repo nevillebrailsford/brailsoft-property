@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane prefHeight="600.0" prefWidth="900.0" stylesheets="@PropertyManagement.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.brailsoft.property.PropertyController">
+	<top>
+		<MenuBar BorderPane.alignment="CENTER">
+			<menus>
+				<Menu mnemonicParsing="false" text="File">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#preferences" text="Preferences" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" onAction="#printReport" text="Print" />
+						<MenuItem mnemonicParsing="false" onAction="#printInventory" text="Print Inventory" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" onAction="#exitApplication" text="Exit Application" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Edit">
+					<items>
+						<MenuItem fx:id="undo" mnemonicParsing="false" onAction="#undo" text="Undo" />
+						<MenuItem fx:id="redo" mnemonicParsing="false" onAction="#redo" text="Redo" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<Menu mnemonicParsing="false" text="Add">
+							<items>
+								<MenuItem fx:id="addProperty" mnemonicParsing="false" onAction="#addProperty" text="A New Property" />
+								<MenuItem fx:id="addItem" mnemonicParsing="false" onAction="#addItem" text="An Event To The Selected Property" />
+								<MenuItem fx:id="addInventory" mnemonicParsing="false" onAction="#addInventory" text="An Inventory Item to The Selected Property" />
+							</items>
+						</Menu>
+						<Menu mnemonicParsing="false" text="Delete">
+							<items>
+								<MenuItem fx:id="deleteProperty" mnemonicParsing="false" onAction="#deleteProperty" text="The Selected Property" />
+								<MenuItem fx:id="deleteItem" mnemonicParsing="false" onAction="#deleteItem" text="An Event From The Selected Property" />
+								<MenuItem fx:id="deleteInventory" mnemonicParsing="false" onAction="#deleteInventory" text="An Inventory Item From The Selected Property" />
+							</items>
+						</Menu>
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="View">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#viewCalendar" text="Calendar" />
+						<SeparatorMenuItem mnemonicParsing="false" />
+						<MenuItem mnemonicParsing="false" onAction="#viewAllItems" text="All Events" />
+						<MenuItem mnemonicParsing="false" onAction="#viewOverdueItems" text="Overdue Events" />
+						<MenuItem mnemonicParsing="false" onAction="#viewNotifiedItems" text="Notified Events" />
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Help">
+					<items>
+						<MenuItem mnemonicParsing="false" onAction="#about" text="About" />
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+	</top>
+	<center>
+		<TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+	</center>
+	<bottom>
+		<HBox alignment="BOTTOM_LEFT" prefHeight="20.0" prefWidth="880.0" BorderPane.alignment="CENTER_LEFT">
+			<children>
+				<TextField fx:id="status" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20" prefWidth="600.0" HBox.hgrow="ALWAYS" />
+				<Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="50.0" HBox.hgrow="NEVER" />
+				<ButtonBar prefHeight="40.0" prefWidth="200.0" HBox.hgrow="NEVER">
+					<buttons>
+						<Button mnemonicParsing="false" onAction="#exitApplication" text="Exit Application" />
+					</buttons>
+				</ButtonBar>
+			</children>
+		</HBox>
+	</bottom>
+</BorderPane>
