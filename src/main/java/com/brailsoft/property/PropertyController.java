@@ -11,8 +11,17 @@ import com.brailsoft.base.Notification;
 import com.brailsoft.base.NotificationCentre;
 import com.brailsoft.base.NotificationListener;
 import com.brailsoft.base.NotificationType;
+import com.brailsoft.model.InventoryItem;
+import com.brailsoft.model.InventoryItemNotificationType;
+import com.brailsoft.model.MonitoredItem;
+import com.brailsoft.model.MonitoredItemNotificationType;
 import com.brailsoft.model.Property;
 import com.brailsoft.model.PropertyNotificationType;
+import com.brailsoft.property.gui.AddInventoryDialog;
+import com.brailsoft.property.gui.CalendarView;
+import com.brailsoft.property.gui.DeleteInventoryDialog;
+import com.brailsoft.property.gui.DeleteItemDialog;
+import com.brailsoft.property.gui.EventDialog;
 import com.brailsoft.property.gui.PropertyDialog;
 import com.brailsoft.property.gui.PropertyTab;
 
@@ -29,6 +38,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class PropertyController implements Initializable, NotificationListener {
@@ -103,27 +113,15 @@ public class PropertyController implements Initializable, NotificationListener {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOGGER.entering(CLASS_NAME, "initialize");
-//		try {
-//			StatusMonitor.getInstance(this);
-//		} catch (Throwable t) {
-//			LOGGER.warning("Caught exception: " + t.getMessage());
-//			LOGGER.exiting(CLASS_NAME, "initialize");
-//			Platform.exit();
-//		}
+		try {
+			StatusMonitor.instance(this);
+		} catch (Throwable t) {
+			LOGGER.warning("Caught exception: " + t.getMessage());
+			LOGGER.exiting(CLASS_NAME, "initialize");
+			Platform.exit();
+		}
 //		propertyMonitor.addListener(listener);
 //		propertyMonitor.startTimer();
-//		try {
-//			localStorage.loadStoredData();
-//		} catch (IOException e) {
-//			LOGGER.warning("Caught exception: " + e.getMessage());
-//			if (e.getMessage().startsWith("LocalStorage: archiveFile") && e.getMessage().endsWith("not found")) {
-//				LOGGER.fine("Ignoring exception");
-//			} else {
-//				LOGGER.fine("Unknown exception");
-//				LOGGER.exiting(CLASS_NAME, "initialize");
-//				Platform.exit();
-//			}
-//		}
 		undo.disableProperty().bind(ChangeManager.instance().undoableProperty().not());
 		redo.disableProperty().bind(ChangeManager.instance().redoableProperty().not());
 		addItem.disableProperty().bind(propertiesExist.not());
@@ -194,14 +192,14 @@ public class PropertyController implements Initializable, NotificationListener {
 	@FXML
 	void addItem(ActionEvent event) {
 		LOGGER.entering(CLASS_NAME, "addItem");
-//		Optional<MonitoredItem> result = new EventDialog().showAndWait();
-//		if (result.isPresent()) {
-//			MonitoredItem item = result.get();
-//			Property property = getSelectedProperty();
-//			item.setOwner(property);
-//			AddMonitoredChange addMonitoredChange = new AddMonitoredChange(item);
-//			ChangeManager.getInstance().execute(addMonitoredChange);
-//		}
+		Optional<MonitoredItem> result = new EventDialog().showAndWait();
+		if (result.isPresent()) {
+			MonitoredItem item = result.get();
+			Property property = getSelectedProperty();
+			item.setOwner(property);
+			AddMonitoredChange addMonitoredChange = new AddMonitoredChange(item);
+			ChangeManager.instance().execute(addMonitoredChange);
+		}
 		LOGGER.exiting(CLASS_NAME, "addItem");
 	}
 
@@ -209,12 +207,12 @@ public class PropertyController implements Initializable, NotificationListener {
 	void deleteItem(ActionEvent event) {
 		LOGGER.entering(CLASS_NAME, "deleteItem");
 		Property property = getSelectedProperty();
-//		Optional<MonitoredItem> result = new DeleteItemDialog(property).showAndWait();
-//		if (result.isPresent()) {
-//			MonitoredItem item = result.get();
-//			RemoveMonitoredChange removeMonitoredChange = new RemoveMonitoredChange(item);
-//			ChangeManager.getInstance().execute(removeMonitoredChange);
-//		}
+		Optional<MonitoredItem> result = new DeleteItemDialog(property).showAndWait();
+		if (result.isPresent()) {
+			MonitoredItem item = result.get();
+			RemoveMonitoredChange removeMonitoredChange = new RemoveMonitoredChange(item);
+			ChangeManager.instance().execute(removeMonitoredChange);
+		}
 		LOGGER.exiting(CLASS_NAME, "deleteItem");
 	}
 
@@ -222,13 +220,13 @@ public class PropertyController implements Initializable, NotificationListener {
 	void addInventory(ActionEvent event) {
 		LOGGER.entering(CLASS_NAME, "addInventory");
 		Property property = getSelectedProperty();
-//		Optional<InventoryItem> result = new AddInventoryDialog(property).showAndWait();
-//		if (result.isPresent()) {
-//			InventoryItem item = result.get();
-//			item.setOwner(property);
-//			AddInventoryChange addInventoryChange = new AddInventoryChange(item);
-//			ChangeManager.getInstance().execute(addInventoryChange);
-//		}
+		Optional<InventoryItem> result = new AddInventoryDialog(property).showAndWait();
+		if (result.isPresent()) {
+			InventoryItem item = result.get();
+			item.setOwner(property);
+			AddInventoryChange addInventoryChange = new AddInventoryChange(item);
+			ChangeManager.instance().execute(addInventoryChange);
+		}
 		LOGGER.exiting(CLASS_NAME, "addInventory");
 	}
 
@@ -236,12 +234,12 @@ public class PropertyController implements Initializable, NotificationListener {
 	void deleteInventory(ActionEvent event) {
 		LOGGER.entering(CLASS_NAME, "deleteInventory");
 		Property property = getSelectedProperty();
-//		Optional<InventoryItem> result = new DeleteInventoryDialog(property).showAndWait();
-//		if (result.isPresent()) {
-//			InventoryItem item = result.get();
-//			RemoveInventoryChange removeInventoryChange = new RemoveInventoryChange(item);
-//			ChangeManager.getInstance().execute(removeInventoryChange);
-//		}
+		Optional<InventoryItem> result = new DeleteInventoryDialog(property).showAndWait();
+		if (result.isPresent()) {
+			InventoryItem item = result.get();
+			RemoveInventoryChange removeInventoryChange = new RemoveInventoryChange(item);
+			ChangeManager.instance().execute(removeInventoryChange);
+		}
 		LOGGER.exiting(CLASS_NAME, "deleteInventory");
 	}
 
@@ -258,20 +256,20 @@ public class PropertyController implements Initializable, NotificationListener {
 		Stage stage = new Stage();
 		stage.setTitle("All Items");
 		Scene scene;
-//		try {
-//			LoadProperty LoadProperty = PropertyManager.loadFXML("AllItems");
-//			scene = new Scene(LoadProperty.getParent());
-//		} catch (Exception e) {
-//			LOGGER.warning("Caught exception: " + e.getMessage());
-//			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
-//			LOGGER.throwing(CLASS_NAME, "viewAllItems", exc);
-//			LOGGER.exiting(CLASS_NAME, "viewAllItems");
-//			throw exc;
-//		}
-//		scene.getStylesheets().add(PropertyManager.class.getResource("PropertyManager.css").toExternalForm());
-//		stage.initModality(Modality.APPLICATION_MODAL);
-//		stage.setScene(scene);
-//		stage.show();
+		try {
+			LoadProperty LoadProperty = propertyManager.loadFXML("AllItems");
+			scene = new Scene(LoadProperty.getParent());
+		} catch (Exception e) {
+			LOGGER.warning("Caught exception: " + e.getMessage());
+			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
+			LOGGER.throwing(CLASS_NAME, "viewAllItems", exc);
+			LOGGER.exiting(CLASS_NAME, "viewAllItems");
+			throw exc;
+		}
+		scene.getStylesheets().add(PropertyController.class.getResource(Constants.CSS_NAME).toExternalForm());
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.show();
 		LOGGER.exiting(CLASS_NAME, "viewAllItems");
 	}
 
@@ -281,20 +279,20 @@ public class PropertyController implements Initializable, NotificationListener {
 		Stage stage = new Stage();
 		stage.setTitle("Overdue Items");
 		Scene scene;
-//		try {
-//			LoadProperty LoadProperty = PropertyManager.loadFXML("OverdueItems");
-//			scene = new Scene(LoadProperty.getParent());
-//		} catch (Exception e) {
-//			LOGGER.warning("Caught exception: " + e.getMessage());
-//			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
-//			LOGGER.throwing(CLASS_NAME, "viewOverdueItems", exc);
-//			LOGGER.exiting(CLASS_NAME, "viewOverdueItems");
-//			throw exc;
-//		}
-//		scene.getStylesheets().add(PropertyManager.class.getResource("PropertyManager.css").toExternalForm());
-//		stage.initModality(Modality.APPLICATION_MODAL);
-//		stage.setScene(scene);
-//		stage.show();
+		try {
+			LoadProperty LoadProperty = propertyManager.loadFXML("OverdueItems");
+			scene = new Scene(LoadProperty.getParent());
+		} catch (Exception e) {
+			LOGGER.warning("Caught exception: " + e.getMessage());
+			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
+			LOGGER.throwing(CLASS_NAME, "viewOverdueItems", exc);
+			LOGGER.exiting(CLASS_NAME, "viewOverdueItems");
+			throw exc;
+		}
+		scene.getStylesheets().add(PropertyController.class.getResource(Constants.CSS_NAME).toExternalForm());
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.show();
 		LOGGER.exiting(CLASS_NAME, "viewOverdueItems");
 	}
 
@@ -304,20 +302,20 @@ public class PropertyController implements Initializable, NotificationListener {
 		Stage stage = new Stage();
 		stage.setTitle("Notified Items");
 		Scene scene;
-//		try {
-//			LoadProperty LoadProperty = PropertyManager.loadFXML("NotifiedItems");
-//			scene = new Scene(LoadProperty.getParent());
-//		} catch (Exception e) {
-//			LOGGER.warning("Caught exception: " + e.getMessage());
-//			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
-//			LOGGER.throwing(CLASS_NAME, "viewNotifiedItems", exc);
-//			LOGGER.exiting(CLASS_NAME, "viewNotifiedItems");
-//			throw exc;
-//		}
-//		scene.getStylesheets().add(PropertyManager.class.getResource("PropertyManager.css").toExternalForm());
-//		stage.initModality(Modality.APPLICATION_MODAL);
-//		stage.setScene(scene);
-//		stage.show();
+		try {
+			LoadProperty LoadProperty = propertyManager.loadFXML("NotifiedItems");
+			scene = new Scene(LoadProperty.getParent());
+		} catch (Exception e) {
+			LOGGER.warning("Caught exception: " + e.getMessage());
+			IllegalArgumentException exc = new IllegalArgumentException("PropertyController: " + e.getMessage());
+			LOGGER.throwing(CLASS_NAME, "viewNotifiedItems", exc);
+			LOGGER.exiting(CLASS_NAME, "viewNotifiedItems");
+			throw exc;
+		}
+		scene.getStylesheets().add(PropertyController.class.getResource(Constants.CSS_NAME).toExternalForm());
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.setScene(scene);
+		stage.show();
 		LOGGER.exiting(CLASS_NAME, "viewNotifiedItems");
 	}
 
@@ -371,10 +369,10 @@ public class PropertyController implements Initializable, NotificationListener {
 		LOGGER.entering(CLASS_NAME, "viewCalendar");
 		Stage stage = new Stage();
 		stage.setTitle("Calendar");
-//		CalendarView mainRoot = new CalendarView();
-//		Scene scene = new Scene(mainRoot, 35 + (53 * 14), 125);
-//		stage.setScene(scene);
-//		stage.show();
+		CalendarView mainRoot = new CalendarView();
+		Scene scene = new Scene(mainRoot, 35 + (53 * 14), 125);
+		stage.setScene(scene);
+		stage.show();
 
 		LOGGER.exiting(CLASS_NAME, "viewCalendar");
 	}
@@ -419,38 +417,158 @@ public class PropertyController implements Initializable, NotificationListener {
 
 	@Override
 	public void notify(Notification notification) {
+		LOGGER.entering(CLASS_NAME, "notification", notification);
 		NotificationType notificationType = notification.notificationType();
-
-		if (notificationType.category().equals("property")) {
-			Platform.runLater(() -> {
-				System.out.println("got " + notification.notificationType().category());
-				if (notificationType == PropertyNotificationType.Add) {
-					addProperty(notification);
-				}
-				if (notificationType == PropertyNotificationType.Removed) {
-					removeProperty(notification);
-				}
-				updatePropertiesExist();
-			});
+		String category = notificationType.category();
+		switch (category) {
+			case Constants.PROPERTY_CATEGORY -> {
+				LOGGER.fine("Property");
+				Property property = (Property) notification.subject().orElse(null);
+				Platform.runLater(() -> {
+					hanldePropertyNotification(notificationType, property);
+				});
+			}
+			case Constants.MONITORED_ITEM_CATEGORY -> {
+				LOGGER.fine("MonitoredItem");
+				MonitoredItem monitoredItem = (MonitoredItem) notification.subject().orElse(null);
+				Platform.runLater(() -> {
+					handleMonitoredItemNotification(notificationType, monitoredItem);
+				});
+			}
+			case Constants.INVENTORY_ITEM_CATEGORY -> {
+				LOGGER.fine("InventoryItem");
+				InventoryItem inventoryItem = (InventoryItem) notification.subject().orElse(null);
+				Platform.runLater(() -> {
+					handleInventoryItemNotification(notificationType, inventoryItem);
+				});
+			}
 		}
+		LOGGER.exiting(CLASS_NAME, "notification", notification);
 	}
 
-	private void addProperty(Notification notification) {
-		Property p = (Property) notification.subject().get();
-		PropertyTab tab = new PropertyTab(p);
+	private void hanldePropertyNotification(NotificationType notificationType, Property property) {
+		LOGGER.entering(CLASS_NAME, "hanldePropertyNotification", new Object[] { notificationType, property });
+		if (notificationType == PropertyNotificationType.Add) {
+			addProperty(property);
+		}
+		if (notificationType == PropertyNotificationType.Removed) {
+			removeProperty(property);
+		}
+		if (notificationType == PropertyNotificationType.Failed) {
+			System.out.println("Property failed");
+		}
+		updatePropertiesExist();
+		LOGGER.exiting(CLASS_NAME, "hanldePropertyNotification");
+	}
+
+	private void handleMonitoredItemNotification(NotificationType notificationType, MonitoredItem monitoredItem) {
+		LOGGER.entering(CLASS_NAME, "handleMonitoredItemNotification",
+				new Object[] { notificationType, monitoredItem });
+		if (notificationType == MonitoredItemNotificationType.Add) {
+			addMonitoredItem(monitoredItem);
+		}
+		if (notificationType == MonitoredItemNotificationType.Changed) {
+			changeMonitoredItem(monitoredItem);
+		}
+		if (notificationType == MonitoredItemNotificationType.Removed) {
+			removeMonitoredItem(monitoredItem);
+		}
+		if (notificationType == MonitoredItemNotificationType.Failed) {
+			System.out.println("MonitoredItem failed");
+		}
+		LOGGER.exiting(CLASS_NAME, "handleMonitoredItemNotification");
+	}
+
+	private void handleInventoryItemNotification(NotificationType notificationType, InventoryItem inventoryItem) {
+		LOGGER.entering(CLASS_NAME, "handleMonitoredItemNotification",
+				new Object[] { notificationType, inventoryItem });
+		if (notificationType == InventoryItemNotificationType.Add) {
+			addInventoryItem(inventoryItem);
+		}
+		if (notificationType == InventoryItemNotificationType.Removed) {
+			removeInventoryItem(inventoryItem);
+		}
+		if (notificationType == InventoryItemNotificationType.Failed) {
+			System.out.println("InventryItem failed");
+		}
+		LOGGER.exiting(CLASS_NAME, "handleMonitoredItemNotification");
+	}
+
+	private void addProperty(Property property) {
+		LOGGER.entering(CLASS_NAME, "addProperty", property);
+		PropertyTab tab = new PropertyTab(property);
 		tabPane.getTabs().add(tab);
 		tabPane.getSelectionModel().select(tab);
+		LOGGER.exiting(CLASS_NAME, "addProperty");
 	}
 
-	private void removeProperty(Notification notification) {
-		Property p = (Property) notification.subject().get();
+	private void removeProperty(Property property) {
+		LOGGER.entering(CLASS_NAME, "removeProperty", property);
 		for (int i = 0; i < tabPane.getTabs().size(); i++) {
 			PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
-			if (tab.getProperty().equals(p)) {
+			if (tab.getProperty().equals(property)) {
 				tabPane.getTabs().remove(i);
 				break;
 			}
 		}
-
+		LOGGER.exiting(CLASS_NAME, "removeProperty");
 	}
+
+	private void addMonitoredItem(MonitoredItem monitoredItem) {
+		LOGGER.entering(CLASS_NAME, "addMonitoredItem", monitoredItem);
+		Property property = monitoredItem.owner();
+		for (int i = 0; i < tabPane.getTabs().size(); i++) {
+			PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
+			if (tab.getProperty().equals(property)) {
+				tab.addMonitoredItem(monitoredItem);
+				break;
+			}
+		}
+		LOGGER.exiting(CLASS_NAME, "addMonitoredItem");
+	}
+
+	private void changeMonitoredItem(MonitoredItem monitoredItem) {
+		LOGGER.entering(CLASS_NAME, "changeMonitoredItem", monitoredItem);
+		Property property = monitoredItem.owner();
+		for (int i = 0; i < tabPane.getTabs().size(); i++) {
+			PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
+			if (tab.getProperty().equals(property)) {
+				tab.changeMonitoredItem(monitoredItem);
+				break;
+			}
+		}
+		LOGGER.exiting(CLASS_NAME, "changeMonitoredItem");
+	}
+
+	private void removeMonitoredItem(MonitoredItem monitoredItem) {
+		LOGGER.entering(CLASS_NAME, "removeMonitoredItem", monitoredItem);
+		Property property = monitoredItem.owner();
+		for (int i = 0; i < tabPane.getTabs().size(); i++) {
+			PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
+			if (tab.getProperty().equals(property)) {
+				tab.removeMonitoredItem(monitoredItem);
+				break;
+			}
+		}
+		LOGGER.exiting(CLASS_NAME, "removeMonitoredItem");
+	}
+
+	private void addInventoryItem(InventoryItem inventoryItem) {
+		LOGGER.entering(CLASS_NAME, "addInventoryItem", inventoryItem);
+		Property property = inventoryItem.owner();
+		for (int i = 0; i < tabPane.getTabs().size(); i++) {
+			PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
+			if (tab.getProperty().equals(property)) {
+				tab.addInventoryItem(inventoryItem);
+				break;
+			}
+		}
+		LOGGER.exiting(CLASS_NAME, "addInventoryItem");
+	}
+
+	private void removeInventoryItem(InventoryItem inventoryItem) {
+		LOGGER.entering(CLASS_NAME, "removeInventoryItem", inventoryItem);
+		LOGGER.exiting(CLASS_NAME, "removeInventoryItem");
+	}
+
 }

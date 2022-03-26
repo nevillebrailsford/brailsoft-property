@@ -42,9 +42,6 @@ public class PropertyTab extends Tab {
 		createItemTab(property);
 
 		createInventoryTab(property);
-
-//		PropertyMonitor.getInstance().addListener(itemListener, property);
-//		PropertyMonitor.getInstance().addInventoryListener(inventoryListener, property);
 	}
 
 	private void createItemTab(Property property) {
@@ -171,4 +168,25 @@ public class PropertyTab extends Tab {
 	public ListChangeListener<? super InventoryItem> getInventoryListener() {
 		return inventoryListener;
 	}
+
+	public void addMonitoredItem(MonitoredItem monitoredItem) {
+		itemTableView.addItem(monitoredItem);
+	}
+
+	public void changeMonitoredItem(MonitoredItem monitoredItem) {
+		itemTableView.replaceItem(monitoredItem);
+	}
+
+	public void removeMonitoredItem(MonitoredItem monitoredItem) {
+		itemTableView.removeItem(monitoredItem);
+	}
+
+	public void addInventoryItem(InventoryItem inventoryItem) {
+		inventoryTableView.addItem(inventoryItem);
+	}
+
+	public void removeInventoryItem(InventoryItem inventoryItem) {
+		inventoryTableView.removeItem(inventoryItem);
+	}
+
 }

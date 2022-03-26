@@ -53,14 +53,14 @@ public class PropertyManagement extends Application {
 		LOGGER.entering(CLASS_NAME, "start");
 		if (startupTasksSucceeded()) {
 			try {
-				LoadProperty loadProperty = loadFXML("PropertyManagement");
+				LoadProperty loadProperty = loadFXML(Constants.FXML_NAME);
 				Scene scene = new Scene(loadProperty.getParent());
-				scene.getStylesheets().add(getClass().getResource("PropertyManagement.css").toExternalForm());
+				scene.getStylesheets().add(getClass().getResource(Constants.CSS_NAME).toExternalForm());
 				mainController = loadProperty.getLoader().getController();
 				mainController.setPropertyManager(this);
 				primaryStage.setScene(scene);
 				primaryStage.setTitle(
-						"PropertyManagement " + ApplicationConfiguration.applicationDecsriptor().applicationName());
+						Constants.WINDOW_TITLE + ApplicationConfiguration.applicationDecsriptor().applicationName());
 				primaryStage.setResizable(false);
 				primaryStage.show();
 				archiveExistingModel();
@@ -117,16 +117,16 @@ public class PropertyManagement extends Application {
 	private boolean handleFirstUse() {
 		LOGGER.entering(CLASS_NAME, "handleFirstUse");
 		boolean result = true;
-		if (IniFile.value("hasbeenused").trim().isEmpty()) {
+		if (IniFile.value(Constants.HAS_BEEN_USED).trim().isEmpty()) {
 			PreferencesData preferencesData = makeInitialChoices();
 			if (preferencesData == null) {
 				result = false;
 			} else {
-				IniFile.store("hasbeenused", "true");
-				IniFile.store("logginglevel", preferencesData.level().toString());
-				IniFile.store("emailnotification", Boolean.toString(preferencesData.emailNotification()));
+				IniFile.store(Constants.HAS_BEEN_USED, "true");
+				IniFile.store(Constants.LOGGING_LEVEL, preferencesData.level().toString());
+				IniFile.store(Constants.EMAIL_NOTIFICATION, Boolean.toString(preferencesData.emailNotification()));
 				if (!preferencesData.emailList().trim().isEmpty()) {
-					IniFile.store("emailList", preferencesData.emailList());
+					IniFile.store(Constants.EMAIL_LIST, preferencesData.emailList());
 				}
 			}
 		}
@@ -145,7 +145,7 @@ public class PropertyManagement extends Application {
 		return data;
 	}
 
-	private LoadProperty loadFXML(String fxml) throws Exception {
+	public LoadProperty loadFXML(String fxml) throws Exception {
 		LOGGER.entering(CLASS_NAME, "loadFXML", fxml);
 		FXMLLoader loader = new FXMLLoader(PropertyManagement.class.getResource(fxml + ".fxml"));
 		Parent root;
@@ -210,7 +210,7 @@ public class PropertyManagement extends Application {
 	private void archiveExistingModel() throws Exception {
 		LOGGER.entering(CLASS_NAME, "archiveExistingModel");
 		File modelDirectory = obtainModelDirectory();
-		File dataFile = new File(modelDirectory, "property.dat");
+		File dataFile = new File(modelDirectory, Constants.PROPERTY_FILE);
 		if (dataFile.exists()) {
 			try {
 				Archiver.archive(dataFile);
@@ -228,7 +228,7 @@ public class PropertyManagement extends Application {
 		LOGGER.entering(CLASS_NAME, "loadExistingModel");
 		PropertyRead propertyRead = new PropertyRead();
 		File modelDirectory = obtainModelDirectory();
-		File dataFile = new File(modelDirectory, "property.dat");
+		File dataFile = new File(modelDirectory, Constants.PROPERTY_FILE);
 		if (dataFile.exists()) {
 			LOGGER.fine("Data file " + dataFile.getAbsolutePath() + " exists");
 			propertyRead.setFileName(dataFile.getAbsolutePath());
@@ -249,7 +249,7 @@ public class PropertyManagement extends Application {
 		File rootDirectory = ApplicationConfiguration.rootDirectory();
 		File applicationDirectory = new File(rootDirectory,
 				ApplicationConfiguration.applicationDecsriptor().applicationName());
-		File modelDirectory = new File(applicationDirectory, "model");
+		File modelDirectory = new File(applicationDirectory, Constants.MODEL);
 		if (!modelDirectory.exists()) {
 			LOGGER.fine("Model directory " + modelDirectory.getAbsolutePath() + " does not exist");
 		} else {
