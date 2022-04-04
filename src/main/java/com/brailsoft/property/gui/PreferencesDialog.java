@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.brailsoft.base.ApplicationConfiguration;
 import com.brailsoft.base.IniFile;
 import com.brailsoft.mail.EmailConfigurer;
+import com.brailsoft.property.Constants;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -48,7 +49,9 @@ public class PreferencesDialog extends Dialog<PreferencesData> {
 
 		loadChoiceBoxWithItems();
 		loggingChoice.getSelectionModel().select(ApplicationConfiguration.applicationDecsriptor().level().toString());
-
+		if (!IniFile.value(Constants.LOGGING_LEVEL).isEmpty()) {
+			loggingChoice.getSelectionModel().select(IniFile.value(Constants.LOGGING_LEVEL));
+		}
 		GridPane grid = new GridPane();
 		grid.setHgap(10.0);
 		grid.setVgap(10.0);

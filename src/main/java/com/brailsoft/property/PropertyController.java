@@ -3,10 +3,12 @@ package com.brailsoft.property;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.brailsoft.base.ApplicationConfiguration;
 import com.brailsoft.base.ChangeManager;
+import com.brailsoft.base.IniFile;
 import com.brailsoft.base.Notification;
 import com.brailsoft.base.NotificationCentre;
 import com.brailsoft.base.NotificationListener;
@@ -22,6 +24,8 @@ import com.brailsoft.property.gui.CalendarView;
 import com.brailsoft.property.gui.DeleteInventoryDialog;
 import com.brailsoft.property.gui.DeleteItemDialog;
 import com.brailsoft.property.gui.EventDialog;
+import com.brailsoft.property.gui.PreferencesData;
+import com.brailsoft.property.gui.PreferencesDialog;
 import com.brailsoft.property.gui.PropertyDialog;
 import com.brailsoft.property.gui.PropertyTab;
 
@@ -46,10 +50,6 @@ public class PropertyController implements Initializable, NotificationListener {
 	private static final Logger LOGGER = ApplicationConfiguration.logger();
 
 	private PropertyManagement propertyManager;
-//	private ApplicationPreferences applicationPreferences = ApplicationPreferences.getInstance();
-//	private File rootDirectory = new File(applicationPreferences.getDirectory());
-//	private LocalStorage localStorage = LocalStorage.getInstance(rootDirectory);
-//	private PropertyMonitor propertyMonitor = PropertyMonitor.getInstance();
 
 	private BooleanProperty propertiesExist = new SimpleBooleanProperty(this, "propertiesExist", false);
 
@@ -83,33 +83,6 @@ public class PropertyController implements Initializable, NotificationListener {
 	@FXML
 	private TextField status;
 
-//	private ListChangeListener<? super Property> listener = new ListChangeListener<>() {
-//		@Override
-//		public void onChanged(Change<? extends Property> change) {
-//			while (change.next()) {
-//				if (change.wasAdded()) {
-//					for (Property p : change.getAddedSubList()) {
-//						PropertyTab tab = new PropertyTab(p);
-//						tabPane.getTabs().add(tab);
-//						tabPane.getSelectionModel().select(tab);
-//					}
-//				}
-//				if (change.wasRemoved()) {
-//					change.getRemoved().stream().forEach(p -> {
-//						for (int i = 0; i < tabPane.getTabs().size(); i++) {
-//							PropertyTab tab = (PropertyTab) tabPane.getTabs().get(i);
-//							if (tab.getProperty().equals(p)) {
-//								tabPane.getTabs().remove(i);
-//								break;
-//							}
-//						}
-//					});
-//				}
-//			}
-//			updatePropertiesExist();
-//		}
-//	};
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		LOGGER.entering(CLASS_NAME, "initialize");
@@ -120,8 +93,6 @@ public class PropertyController implements Initializable, NotificationListener {
 			LOGGER.exiting(CLASS_NAME, "initialize");
 			Platform.exit();
 		}
-//		propertyMonitor.addListener(listener);
-//		propertyMonitor.startTimer();
 		undo.disableProperty().bind(ChangeManager.instance().undoableProperty().not());
 		redo.disableProperty().bind(ChangeManager.instance().redoableProperty().not());
 		addItem.disableProperty().bind(propertiesExist.not());
@@ -336,31 +307,17 @@ public class PropertyController implements Initializable, NotificationListener {
 	@FXML
 	void preferences() {
 		LOGGER.entering(CLASS_NAME, "preferences");
-//		Optional<PreferencesData> result = new PreferencesDialog().showAndWait();
-//		if (result.isPresent()) {
-//			String newDirectory = result.get().getDirectory();
-//			Level loggingLevel = result.get().getLevel();
-//			boolean notification = result.get().getEmailNotification();
-//			String emails = result.get().getEmailList();
-//			try {
-//				if (!applicationPreferences.getLevel().equals(loggingLevel)) {
-//					applicationPreferences.setLevel(loggingLevel);
-//					PropertyManagerLogConfigurer.changeLevel(loggingLevel);
-//				}
-//				if (!applicationPreferences.getDirectory().equals(newDirectory)) {
-//					applicationPreferences.setDirectory(newDirectory);
-//					removeTabsFromView();
-//					resetModelToEmpty();
-//					LocalStorage.getInstance(new File(applicationPreferences.getDirectory())).loadStoredData();
-//				}
-//				applicationPreferences.setEmailNotification(notification);
-//				applicationPreferences.setEMailList(emails);
-//			} catch (BackingStoreException e) {
-//				LOGGER.warning("Caught exception: " + e.getMessage());
-//			} catch (IOException e) {
-//				LOGGER.warning("Caught exception: " + e.getMessage());
-//			}
-//		}
+		Optional<PreferencesData> result = new PreferencesDialog().showAndWait();
+		if (result.isPresent()) {
+			Level loggingLevel = result.get().level();
+			boolean notification = result.get().emailNotification();
+			String emails = result.get().emailList();
+			IniFile.store(Constants.LOGGING_LEVEL, loggingLevel.toString());
+			IniFile.store(Constants.EMAIL_NOTIFICATION, Boolean.toString(notification));
+			if (!emails.trim().isEmpty()) {
+				IniFile.store(Constants.EMAIL_LIST, emails);
+			}
+		}
 		LOGGER.entering(CLASS_NAME, "preferences");
 	}
 
@@ -375,25 +332,6 @@ public class PropertyController implements Initializable, NotificationListener {
 		stage.show();
 
 		LOGGER.exiting(CLASS_NAME, "viewCalendar");
-	}
-
-	private void resetModelToEmpty() {
-		LOGGER.entering(CLASS_NAME, "resetModelToEmpty");
-//		PropertyMonitor.getInstance().removeListener(listener);
-//		PropertyMonitor.getInstance().clear();
-//		PropertyMonitor.getInstance().addListener(listener);
-		LOGGER.exiting(CLASS_NAME, "resetModelToEmpty");
-	}
-
-	private void removeTabsFromView() {
-		LOGGER.entering(CLASS_NAME, "removeTabsFromView");
-//		for (Tab t : tabPane.getTabs()) {
-//			PropertyTab pt = (PropertyTab) t;
-//			PropertyMonitor.getInstance().removeListener(pt.getItemListener(), pt.getProperty());
-//			PropertyMonitor.getInstance().removeInventoryListener(pt.getInventoryListener(), pt.getProperty());
-//		}
-		tabPane.getTabs().clear();
-		LOGGER.exiting(CLASS_NAME, "removeTabsFromView");
 	}
 
 	private ButtonType userWantsToDeleteProperty(Property property) {
