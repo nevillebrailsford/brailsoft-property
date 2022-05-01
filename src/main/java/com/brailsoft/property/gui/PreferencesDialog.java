@@ -71,7 +71,11 @@ public class PreferencesDialog extends Dialog<PreferencesData> {
 		emailNotification.setOnAction((event) -> {
 			if (!EmailConfigurer.getInstance().isValidConfiguration()) {
 				emailNotification.setSelected(false);
-				new Alert(AlertType.INFORMATION, "Email configuration not valid", ButtonType.OK).showAndWait();
+				Alert alert = new Alert(AlertType.WARNING);
+				alert.setTitle("Email Configuration");
+				alert.setHeaderText("Email Configuration is incomplete.");
+				alert.setContentText("Email notification cannot be enabled at this time.");
+				alert.showAndWait();
 			}
 		});
 

@@ -39,6 +39,7 @@ public class PropertyManagement extends Application {
 	public void stop() throws Exception {
 		LOGGER.entering(CLASS_NAME, "stop");
 		super.stop();
+		Timer.instance().stop();
 		NotificationCentre.stop();
 		ThreadServices.getInstance().executor().shutdown();
 		LOGGER.exiting(CLASS_NAME, "stop");
@@ -65,6 +66,7 @@ public class PropertyManagement extends Application {
 				primaryStage.show();
 				archiveExistingModel();
 				loadExistingModel();
+				Timer.instance().start();
 			} catch (Exception e) {
 				System.out.println("start caught exception: " + e.getMessage());
 				LOGGER.warning("start caught exception: " + e.getMessage());

@@ -101,6 +101,7 @@ public class PropertyController implements Initializable, NotificationListener {
 		deleteItem.disableProperty().bind(propertiesExist.not());
 		deleteInventory.disableProperty().bind(propertiesExist.not());
 		NotificationCentre.addListener(this);
+		TimerHandler.listen();
 		LOGGER.exiting(CLASS_NAME, "initialize");
 	}
 
