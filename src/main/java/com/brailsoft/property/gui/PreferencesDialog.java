@@ -69,7 +69,7 @@ public class PreferencesDialog extends Dialog<PreferencesData> {
 		});
 
 		emailNotification.setOnAction((event) -> {
-			if (!EmailConfigurer.getInstance().isValidConfiguration()) {
+			if (!EmailConfigurer.instance().isValidConfiguration()) {
 				emailNotification.setSelected(false);
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Email Configuration");
