@@ -86,7 +86,7 @@ public class PreferencesDialog extends Dialog<PreferencesData> {
 			}
 		});
 
-		emails.setText(""); // preferences.getEMailList());
+		emails.setText(IniFile.value(Constants.EMAIL_LIST));
 
 		ButtonType buttonTypeOk = new ButtonType("Set Preferences", ButtonData.OK_DONE);
 		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.NO);
@@ -94,7 +94,7 @@ public class PreferencesDialog extends Dialog<PreferencesData> {
 		emails.disableProperty().bind(emailNotification.selectedProperty().not());
 		editEMail.disableProperty().bind(emailNotification.selectedProperty().not());
 
-		emailNotification.setSelected(false); // preferences.isEmailNotification());
+		emailNotification.setSelected(Boolean.valueOf(IniFile.value(Constants.EMAIL_NOTIFICATION)).booleanValue());
 
 		setResultConverter(new Callback<ButtonType, PreferencesData>() {
 

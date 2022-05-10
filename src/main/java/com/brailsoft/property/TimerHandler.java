@@ -2,6 +2,7 @@ package com.brailsoft.property;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.brailsoft.base.ApplicationConfiguration;
@@ -10,6 +11,9 @@ import com.brailsoft.base.Notification;
 import com.brailsoft.base.NotificationCentre;
 import com.brailsoft.base.NotificationListener;
 import com.brailsoft.base.NotificationType;
+import com.brailsoft.base.ThreadServices;
+import com.brailsoft.mail.EmailSender;
+import com.brailsoft.model.MonitoredItem;
 import com.brailsoft.model.Property;
 import com.brailsoft.model.PropertyMonitor;
 
@@ -68,7 +72,7 @@ public class TimerHandler implements NotificationListener {
 		lookForMonitoredItems();
 		sendEmailIfRequired();
 		updateLastTime(now);
-		updateStatus();
+		updateStatus("Timed actions completed");
 		LOGGER.exiting(CLASS_NAME, "performTimedActions");
 	}
 
@@ -93,11 +97,76 @@ public class TimerHandler implements NotificationListener {
 			} else {
 				lastSent = LocalDate.parse(IniFile.value(Constants.DATE_OF_LAST_EMAIL));
 			}
+			List<Property> overdueProperties = PropertyMonitor.instance().propertiesWithOverdueItems();
+			List<Property> notifiedProperties = PropertyMonitor.instance().propertiesWithOverdueNotices();
+			if (overdueProperties.size() + notifiedProperties.size() > 0) {
+				LOGGER.fine("Properties found");
+				sendEmail();
+			} else {
+				LOGGER.fine("No properties found");
+			}
+			updateDateOfLastEmailCheck();
 			LOGGER.fine("lastSent = " + lastSent.toString());
 		} else {
 			LOGGER.fine("Email notification is not enabled");
 		}
 		LOGGER.exiting(CLASS_NAME, "sendEmailIfRequired");
+	}
+
+	private void sendEmail() {
+		LOGGER.entering(CLASS_NAME, "sendEmail");
+		List<MonitoredItem> overdueItems = PropertyMonitor.instance().overdueItemsFor(LocalDate.now());
+		List<MonitoredItem> notifiedItems = PropertyMonitor.instance().notifiedItemsFor(LocalDate.now());
+		String message = composeMessage(overdueItems, notifiedItems);
+		updateStatus("Preparing to send email");
+		EmailSender worker = new EmailSender(message);
+		ThreadServices.getInstance().executor().execute(worker);
+		updateItemDate(overdueItems, notifiedItems);
+		updateStatus("Request to send email complete");
+		LOGGER.exiting(CLASS_NAME, "sendEmail");
+	}
+
+	private void updateItemDate(List<MonitoredItem> overdueItems, List<MonitoredItem> notifiedItems) {
+		LOGGER.entering(CLASS_NAME, "updateItemDate");
+		for (MonitoredItem i : overdueItems) {
+			i.setEmailSentOn(LocalDate.now());
+		}
+		for (MonitoredItem i : notifiedItems) {
+			i.setEmailSentOn(LocalDate.now());
+		}
+		LOGGER.exiting(CLASS_NAME, "updateItemDate");
+	}
+
+	private String composeMessage(List<MonitoredItem> overdueItems, List<MonitoredItem> notifiedItems) {
+		LOGGER.entering(CLASS_NAME, "composeMessage");
+		StringBuffer message = new StringBuffer();
+		message.append("The following items need attention:\n\n");
+		if (notifiedItems.size() > 0) {
+			message.append("The following items are due soon:\n");
+			for (MonitoredItem item : notifiedItems) {
+				message.append(item.owner().toString()).append(" - ");
+				message.append(item.toString());
+				message.append("\n");
+			}
+			message.append("\n");
+		}
+		if (overdueItems.size() > 0) {
+			message.append("The following items are overdue:\n");
+			for (MonitoredItem item : overdueItems) {
+				message.append(item.owner().toString()).append(" ");
+				message.append(item.toString());
+				message.append("\n");
+			}
+			message.append("\n");
+		}
+		LOGGER.exiting(CLASS_NAME, "composeMessage");
+		return message.toString();
+	}
+
+	private void updateDateOfLastEmailCheck() {
+		LOGGER.entering(CLASS_NAME, "updateDateOfLastEmailCheck");
+		IniFile.store(Constants.DATE_OF_LAST_EMAIL, LocalDate.now().toString());
+		LOGGER.exiting(CLASS_NAME, "updateDateOfLastEmailCheck");
 	}
 
 	private void updateLastTime(LocalDateTime now) {
@@ -106,9 +175,9 @@ public class TimerHandler implements NotificationListener {
 		LOGGER.exiting(CLASS_NAME, "");
 	}
 
-	private void updateStatus() {
+	private void updateStatus(String message) {
 		LOGGER.entering(CLASS_NAME, "updateStatus");
-		StatusMonitor.instance(null).update("Timed actions performed successfully");
+		StatusMonitor.instance(null).update(message);
 		LOGGER.exiting(CLASS_NAME, "updateStatus");
 	}
 
